@@ -15,7 +15,7 @@ console.log(vapidKeys.publicKey);
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
     res.header('Content-Type', 'application/json');
@@ -24,18 +24,18 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get('/getPublicKey', function(req, res) {
+app.get('/getPublicKey', function (req, res) {
     // A real world application would store the subscription info.
     res.json({ key: vapidKeys.publicKey });
 });
 
 
-app.post('/register', function(req, res) {
+app.post('/register', function (req, res) {
     // A real world application would store the subscription info.
     res.sendStatus(201);
 });
 
-app.post('/sendNotification', function(req, res) {
+app.post('/sendNotification', function (req, res) {
     clearInterval(refreshInterval);
 
     const pushSubscriptions = {
@@ -51,7 +51,7 @@ app.post('/sendNotification', function(req, res) {
             subject: 'mailto:cbrbusissues@gmail.com',
             publicKey: vapidKeys.publicKey,
             privateKey: vapidKeys.privateKey
-        },
+        }
     };
 
     webPush.setGCMAPIKey('135415812168');
@@ -85,7 +85,7 @@ app.post('/sendNotification', function(req, res) {
     $xml += '</Siri>';
 
     console.log('sendNotification::');
-    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function(err, window) {
+    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
         var $ = window.$;
         $.support.cors = true;
 
@@ -101,36 +101,29 @@ app.post('/sendNotification', function(req, res) {
                     console.log('success::');
                     var xmlDoc = $.parseXML(xml),
                         $xml = $(xmlDoc),
-                        isVehicleFound = false;
+                        isNextStop = false;
 
                     // console.log(xmlDoc);
-                    var $vehicleRefQuery = vehicleRef,
-                        $vehicleActivity = $xml.find('VehicleActivity'),
+                    var $vehicleActivity = $xml.find('VehicleActivity'),
                         $v,
-                        vehicleLocation,
-                        $vehicleLocation,
                         $vehicleLat,
                         $vehicleLng,
                         stopPointRef;
 
                     $.each($vehicleActivity, function (i, v) {
                         $v = $(v);
-                        vehicleLocation = $v.find('VehicleLocation');
-                        $vehicleLocation = vehicleLocation;
-                        $vehicleLat = $vehicleLocation.find('Latitude');
-                        $vehicleLng = $vehicleLocation.find('Longitude');
                         stopPointRef = $v.find('StopPointRef');
 
                         if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
-                            console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId)
+                            console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
                             if (stopPointRef[0].innerHTML == busStopId) {
-                                isVehicleFound = true;
+                                isNextStop = true;
                                 return false;
                             }
                         }
                     });
 
-                    if (isVehicleFound) {
+                    if (isNextStop) {
                         clearInterval(refreshInterval);
 
                         webPush.sendNotification(
@@ -153,9 +146,3 @@ app.post('/sendNotification', function(req, res) {
 app.listen(process.env.PORT || 8888, function () {
     console.log('Example app listening on port 8888!');
 });
-
-
-// Functions
-function processData(xml) {
-
-}
