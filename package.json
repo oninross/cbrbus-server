@@ -1,0 +1,17 @@
+{
+  "name": "cbrbuses",
+  "description": "",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "cors": "^2.8.1",
+    "express": "^4.14.1",
+    "express-jquery": "^1.8.3",
+    "isomorphic-fetch": "^2.2.1",
+    "jquery": "^3.1.1",
+    "jsdom": "^9.10.0",
+    "push.js": "0.0.12",
+    "web-push": "^3.2.1"
+  }
+}
