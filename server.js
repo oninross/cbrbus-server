@@ -108,15 +108,17 @@ app.post('/sendNotification', function (req, res) {
                         $v,
                         $vehicleLat,
                         $vehicleLng,
+                        onwardCall,
                         stopPointRef;
 
                     $.each($vehicleActivity, function (i, v) {
                         $v = $(v);
-                        stopPointRef = $v.find('StopPointRef');
+                        onwardCall = $v.find('OnwardCall');
+                        stopPointRef = $(onwardCall).find('StopPointRef');
 
                         if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
                             console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
-                            if (stopPointRef[0].innerHTML == busStopId) {
+                            if (Number(stopPointRef[0].innerHTML) == Number(busStopId)) {
                                 isNextStop = true;
                                 return false;
                             }
