@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "body-parser": "^1.16.0",
-    "express": "^4.14.1",
-    "jquery": "^3.1.1",
-    "jsdom": "^9.10.0",
-    "web-push": "^3.2.1"
+    "body-parser": "latest",
+    "express": "latest",
+    "jquery": "latest",
+    "jsdom": "latest",
+    "web-push": "latest"
   }
 }
