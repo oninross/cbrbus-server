@@ -10,6 +10,14 @@ refreshInterval;
 const vapidKeys = webPush.generateVAPIDKeys();
 const API_KEY = 'A6F762'; // Development
 // const API_KEY = 'AE9887'; // Production
+const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
+
+webPush.setGCMAPIKey(GCM_API_KEY);
+webPush.setVapidDetails(
+    'mailto:cbrbusissues@gmail.com',
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+);
 
 console.log(vapidKeys.publicKey);
 
@@ -36,141 +44,138 @@ app.post('/register', function (req, res) {
     res.sendStatus(201);
 });
 
-app.post('/sendNotification', function (req, res) {
-    setTimeout(function () {
-        webPush.sendNotification({
-            endpoint: req.body.endpoint,
-            TTL: 0,
-            keys: {
-                p256dh: req.body.key,
-                auth: req.body.authSecret
-            }
-        }, '')
-        .then(function () {
-            res.sendStatus(201);
-        })
-        .catch(function (error) {
-            console.log(error);
-            res.sendStatus(500);
-        });
-    });
-});
-
+// For debugging
 // app.post('/sendNotification', function (req, res) {
-//     clearInterval(refreshInterval);
-
-//     const pushSubscriptions = {
+//     const pushSubscription = {
 //         endpoint: req.body.endpoint,
 //         keys: {
-//             p256dh: req.body.key,
-//             auth: req.body.authSecret
+//             auth: req.body.authSecret,
+//             p256dh: req.body.key
 //         }
 //     },
-//     payload = '',
+//     payload = 'Payload Text',
 //     options = {
-//         vapidDetails: {
-//             subject: 'mailto:cbrbusissues@gmail.com',
-//             publicKey: vapidKeys.publicKey,
-//             privateKey: vapidKeys.privateKey
-//         }
+//         gcmAPIKey: GCM_API_KEY,
+//         TTL: 0
 //     };
 
-//     webPush.setGCMAPIKey('135415812168');
-
-//     webPush.sendNotification(
-//         pushSubscriptions,
-//         payload,
-//         options
-//     );
-
-//     // var busId = req.body.busId,
-//     //     busStopId = req.body.busStopId,
-//     //     $xml = '';
-
-//     // vehicleRef = req.body.vehicleRef;
-
-//     // if (busId < 10) {
-//     //     busId = '000' + busId.toString();
-//     // } else if (busId < 100) {
-//     //     busId = '00' + busId.toString();
-//     // } else if (busId < 1000) {
-//     //     busId = '0' + busId.toString();
-//     // }
-
-//     // $xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>';
-//     // $xml += '<Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt">';
-
-//     // $xml += '<ServiceRequest>';
-//     // $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
-//     // $xml += '<RequestorRef>' + API_KEY + '</RequestorRef>';
-//     // $xml += '<VehicleMonitoringRequest version="2.0">';
-//     // $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
-//     // $xml += '<VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef>';
-//     // $xml += '</VehicleMonitoringRequest>';
-//     // $xml += '</ServiceRequest>';
-
-//     // $xml += '</Siri>';
-
-//     // console.log('sendNotification::');
-//     // jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
-//     //     var $ = window.$;
-//     //     $.support.cors = true;
-
-//     //     refreshInterval = setInterval(function () {
-//     //         console.log('refresh::');
-//     //         $.ajax({
-//     //             url: 'https://cors-anywhere.herokuapp.com/http://siri.nxtbus.act.gov.au:11000/' + API_KEY + '/vm/service.xml',
-//     //             data: $xml,
-//     //             type: 'POST',
-//     //             contentType: 'text/xml',
-//     //             dataType: "text",
-//     //             success: function (xml) {
-//     //                 console.log('success::');
-//     //                 var xmlDoc = $.parseXML(xml),
-//     //                     $xml = $(xmlDoc),
-//     //                     isNextStop = false;
-
-//     //                 // console.log(xmlDoc);
-//     //                 var $vehicleActivity = $xml.find('VehicleActivity'),
-//     //                     $v,
-//     //                     $vehicleLat,
-//     //                     $vehicleLng,
-//     //                     onwardCall,
-//     //                     stopPointRef;
-
-//     //                 $.each($vehicleActivity, function (i, v) {
-//     //                     $v = $(v);
-//     //                     onwardCall = $v.find('OnwardCall');
-//     //                     stopPointRef = $(onwardCall).find('StopPointRef');
-
-//     //                     if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
-//     //                         console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
-//     //                         if (Number(stopPointRef[0].innerHTML) == Number(busStopId)) {
-//     //                             isNextStop = true;
-//     //                             return false;
-//     //                         }
-//     //                     }
-//     //                 });
-
-//     //                 if (isNextStop) {
-//     //                     clearInterval(refreshInterval);
-
-//     //                     webPush.sendNotification(
-//     //                         pushSubscriptions,
-//     //                         payload,
-//     //                         options
-//     //                     );
-//     //                 }
-//     //             },
-//     //             error: function (error) {
-//     //                 console.log(error);
-//     //             }
-//     //         });
-//     //     }, 10000);
-//     // });
-
-//     res.send('OK');
+//     webPush.sendNotification(pushSubscription, payload, options)
+//         .then(function () {
+//             res.sendStatus(201);
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//             res.sendStatus(error.statusCode);
+//         });
 // });
+
+app.post('/sendNotification', function (req, res) {
+    clearInterval(refreshInterval);
+
+    const pushSubscription = {
+        endpoint: req.body.endpoint,
+        keys: {
+            auth: req.body.authSecret,
+            p256dh: req.body.key
+        }
+    },
+    payload = 'Payload Text',
+    options = {
+        gcmAPIKey: GCM_API_KEY,
+        TTL: 0
+    };
+
+    var busId = req.body.busId,
+        busStopId = req.body.busStopId,
+        $xml = '';
+
+    vehicleRef = req.body.vehicleRef;
+
+    if (busId < 10) {
+        busId = '000' + busId.toString();
+    } else if (busId < 100) {
+        busId = '00' + busId.toString();
+    } else if (busId < 1000) {
+        busId = '0' + busId.toString();
+    }
+
+    $xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>';
+    $xml += '<Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt">';
+
+    $xml += '<ServiceRequest>';
+    $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
+    $xml += '<RequestorRef>' + API_KEY + '</RequestorRef>';
+    $xml += '<VehicleMonitoringRequest version="2.0">';
+    $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
+    $xml += '<VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef>';
+    $xml += '</VehicleMonitoringRequest>';
+    $xml += '</ServiceRequest>';
+
+    $xml += '</Siri>';
+
+    console.log('sendNotification::');
+    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
+        var $ = window.$;
+        $.support.cors = true;
+
+        refreshInterval = setInterval(function () {
+            console.log('refresh::');
+            $.ajax({
+                url: 'https://cors-anywhere.herokuapp.com/http://siri.nxtbus.act.gov.au:11000/' + API_KEY + '/vm/service.xml',
+                data: $xml,
+                type: 'POST',
+                contentType: 'text/xml',
+                dataType: "text",
+                success: function (xml) {
+                    console.log('success::');
+                    var xmlDoc = $.parseXML(xml),
+                        $xml = $(xmlDoc),
+                        isNextStop = false;
+
+                    // console.log(xmlDoc);
+                    var $vehicleActivity = $xml.find('VehicleActivity'),
+                        $v,
+                        $vehicleLat,
+                        $vehicleLng,
+                        onwardCall,
+                        stopPointRef;
+
+                    $.each($vehicleActivity, function (i, v) {
+                        $v = $(v);
+                        onwardCall = $v.find('OnwardCall');
+                        stopPointRef = $(onwardCall).find('StopPointRef');
+
+                        if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
+                            console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
+                            if (Number(stopPointRef[0].innerHTML) == Number(busStopId)) {
+                                isNextStop = true;
+                                return false;
+                            }
+                        }
+                    });
+
+                    if (isNextStop) {
+                        clearInterval(refreshInterval);
+
+                        webPush.sendNotification(pushSubscription, payload, options)
+                            .then(function () {
+                                res.sendStatus(201);
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                res.sendStatus(error.statusCode);
+                            });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }, 10000);
+    });
+
+    res.send('OK');
+});
 
 
 app.listen(process.env.PORT || 8888, function () {
