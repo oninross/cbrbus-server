@@ -79,7 +79,6 @@ app.post('/sendNotification', function (req, res) {
             p256dh: req.body.key
         }
     },
-    payload = 'Payload Text',
     options = {
         gcmAPIKey: GCM_API_KEY,
         TTL: 0
@@ -97,7 +96,9 @@ app.post('/sendNotification', function (req, res) {
         busId = '00' + busId.toString();
     } else if (busId < 1000) {
         busId = '0' + busId.toString();
-    }
+    };
+
+    var payload = busId.toString() + ',' + vehicleRef.toString();
 
     $xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>';
     $xml += '<Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt">';
@@ -173,8 +174,6 @@ app.post('/sendNotification', function (req, res) {
             });
         }, 10000);
     });
-
-    res.send('OK');
 });
 
 
