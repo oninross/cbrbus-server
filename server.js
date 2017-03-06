@@ -8,9 +8,11 @@ vehicleRef,
 refreshInterval;
 
 const vapidKeys = webPush.generateVAPIDKeys();
-const API_KEY = 'A6F762'; // Development
-// const API_KEY = 'AE9887'; // Production
-const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
+// const API_KEY = 'A6F762'; // Development
+const API_KEY = 'AE9887'; // Production
+
+// const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
+const GCM_API_KEY = 'AAAAKoN0_ck:APA91bHMOpXH94yl1uFw_iJBblXnB5ufZBg1nF5qxlNuJd2mfotdBoEQtebv_0BxAYQiSgqWid3eRufXij7-396kXwYhum_V-hKXBrGUjWPBAEtvGCMKzioFlzxRBPYwOXRXcGk-limV';
 
 webPush.setGCMAPIKey(GCM_API_KEY);
 webPush.setVapidDetails(
