@@ -1,15 +1,23 @@
 var $ = require('jquery'),
-    jsdom = require("jsdom"),
-    express = require('express'),
-    app = express(),
-    webPush = require('web-push'),
-    bodyParser = require('body-parser'),
-    vehicleRef,
-    refreshInterval;
+jsdom = require("jsdom"),
+express = require('express'),
+app = express(),
+webPush = require('web-push'),
+bodyParser = require('body-parser'),
+vehicleRef,
+refreshInterval;
 
 const vapidKeys = webPush.generateVAPIDKeys();
 const API_KEY = 'A6F762'; // Development
 // const API_KEY = 'AE9887'; // Production
+const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
+
+webPush.setGCMAPIKey(GCM_API_KEY);
+webPush.setVapidDetails(
+    'mailto:cbrbusissues@gmail.com',
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+);
 
 console.log(vapidKeys.publicKey);
 
@@ -32,29 +40,49 @@ app.get('/getPublicKey', function (req, res) {
 
 app.post('/register', function (req, res) {
     // A real world application would store the subscription info.
+    console.log('register::')
     res.sendStatus(201);
 });
+
+// For debugging
+// app.post('/sendNotification', function (req, res) {
+//     const pushSubscription = {
+//         endpoint: req.body.endpoint,
+//         keys: {
+//             auth: req.body.authSecret,
+//             p256dh: req.body.key
+//         }
+//     },
+//     payload = 'Payload Text',
+//     options = {
+//         gcmAPIKey: GCM_API_KEY,
+//         TTL: 0
+//     };
+
+//     webPush.sendNotification(pushSubscription, payload, options)
+//         .then(function () {
+//             res.sendStatus(201);
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//             res.sendStatus(error.statusCode);
+//         });
+// });
 
 app.post('/sendNotification', function (req, res) {
     clearInterval(refreshInterval);
 
-    const pushSubscriptions = {
+    const pushSubscription = {
         endpoint: req.body.endpoint,
         keys: {
-            p256dh: req.body.key,
-            auth: req.body.authSecret
+            auth: req.body.authSecret,
+            p256dh: req.body.key
         }
     },
-    payload = '',
     options = {
-        vapidDetails: {
-            subject: 'mailto:cbrbusissues@gmail.com',
-            publicKey: vapidKeys.publicKey,
-            privateKey: vapidKeys.privateKey
-        }
+        gcmAPIKey: GCM_API_KEY,
+        TTL: 0
     };
-
-    webPush.setGCMAPIKey('135415812168');
 
     var busId = req.body.busId,
         busStopId = req.body.busStopId,
@@ -68,7 +96,9 @@ app.post('/sendNotification', function (req, res) {
         busId = '00' + busId.toString();
     } else if (busId < 1000) {
         busId = '0' + busId.toString();
-    }
+    };
+
+    var payload = busId.toString() + ',' + vehicleRef.toString();
 
     $xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>';
     $xml += '<Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt">';
@@ -128,11 +158,14 @@ app.post('/sendNotification', function (req, res) {
                     if (isNextStop) {
                         clearInterval(refreshInterval);
 
-                        webPush.sendNotification(
-                            pushSubscriptions,
-                            payload,
-                            options
-                        );
+                        webPush.sendNotification(pushSubscription, payload, options)
+                            .then(function () {
+                                res.sendStatus(201);
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                res.sendStatus(error.statusCode);
+                            });
                     }
                 },
                 error: function (error) {
@@ -141,9 +174,8 @@ app.post('/sendNotification', function (req, res) {
             });
         }, 10000);
     });
-
-    res.send('OK');
 });
+
 
 app.listen(process.env.PORT || 8888, function () {
     console.log('Example app listening on port 8888!');
