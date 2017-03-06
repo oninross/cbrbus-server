@@ -1,16 +1,23 @@
 var $ = require('jquery'),
-jsdom = require("jsdom"),
-express = require('express'),
-app = express(),
-webPush = require('web-push'),
-bodyParser = require('body-parser'),
-vehicleRef,
-refreshInterval;
+    jsdom = require("jsdom"),
+    express = require('express'),
+    app = express(),
+    webPush = require('web-push'),
+    bodyParser = require('body-parser'),
+    vehicleRef,
+    refreshInterval;
 
-const vapidKeys = webPush.generateVAPIDKeys();
+// const vapidKeys = webPush.generateVAPIDKeys();
+const vapidKeys = {
+    publicKey: 'BHnP91xg7BNedZsNmxZQXQlIlvw3WIomSKSRVqPJWeBCG7ESk5JkJeAHLO0blJrjUwAEWGFqHlc3pvejfC9RGrU',
+    privateKey: 'HIPF01RNT7VvKKqLIqgtH-PUGs6lN1wSErnZLpuIp8c'
+};
+
 const API_KEY = 'A6F762'; // Development
 // const API_KEY = 'AE9887'; // Production
+
 const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
+// const GCM_API_KEY = 'AAAAKoN0_ck:APA91bHMOpXH94yl1uFw_iJBblXnB5ufZBg1nF5qxlNuJd2mfotdBoEQtebv_0BxAYQiSgqWid3eRufXij7-396kXwYhum_V-hKXBrGUjWPBAEtvGCMKzioFlzxRBPYwOXRXcGk-limV';
 
 webPush.setGCMAPIKey(GCM_API_KEY);
 webPush.setVapidDetails(
@@ -18,8 +25,6 @@ webPush.setVapidDetails(
     vapidKeys.publicKey,
     vapidKeys.privateKey
 );
-
-console.log(vapidKeys.publicKey);
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
