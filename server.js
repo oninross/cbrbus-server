@@ -1,13 +1,18 @@
 var $ = require('jquery'),
-jsdom = require("jsdom"),
-express = require('express'),
-app = express(),
-webPush = require('web-push'),
-bodyParser = require('body-parser'),
-vehicleRef,
-refreshInterval;
+    jsdom = require("jsdom"),
+    express = require('express'),
+    app = express(),
+    webPush = require('web-push'),
+    bodyParser = require('body-parser'),
+    vehicleRef,
+    refreshInterval;
 
-const vapidKeys = webPush.generateVAPIDKeys();
+const vapidKeys = {
+    publicKey: 'BM-ynBumqLV6vo6Gw4-dYVI1eHZEOJ8MQEx1VdoF6sQQ0S16v4MyfnDJ0oGxIXOuaDELVGODw2qCi5cYLroHWks',
+    privateKey: 'U56YyXm2NRzPnz_ZmeRO4PS4zmWtMrJFq4Bx5TCDh_4'
+};
+
+
 // const API_KEY = 'A6F762'; // Development
 const API_KEY = 'AE9887'; // Production
 
@@ -20,8 +25,6 @@ webPush.setVapidDetails(
     vapidKeys.publicKey,
     vapidKeys.privateKey
 );
-
-console.log(vapidKeys.publicKey);
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
