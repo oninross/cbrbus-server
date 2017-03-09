@@ -1,1 +1,1 @@
-web: node server.min.js
+web: node server.js
