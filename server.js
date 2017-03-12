@@ -7,24 +7,9 @@ var $ = require('jquery'),
     vehicleRef,
     refreshInterval;
 
-const vapidKeys = {
-    publicKey: 'BM-ynBumqLV6vo6Gw4-dYVI1eHZEOJ8MQEx1VdoF6sQQ0S16v4MyfnDJ0oGxIXOuaDELVGODw2qCi5cYLroHWks',
-    privateKey: 'U56YyXm2NRzPnz_ZmeRO4PS4zmWtMrJFq4Bx5TCDh_4'
-};
-
-
-// const API_KEY = 'A6F762'; // Development
-const API_KEY = 'AE9887'; // Production
-
-// const GCM_API_KEY = 'AAAAH4dpUEg:APA91bHxlJlKldQNvo8Yos9q0DXiU__bv68WSbSb7NGeQS_pXrmFuAvCrWV6A9KvQhzjJq0hxKGchF2m0kdhb-0eQhjmsWmJRac_sBtSfKnpY_Z7QLAkrEUAtydEVsxy8xuWvHcHp0LyjwpMCtQ1fGrdqS9HDlysRA';
-const GCM_API_KEY = 'AAAAKoN0_ck:APA91bHMOpXH94yl1uFw_iJBblXnB5ufZBg1nF5qxlNuJd2mfotdBoEQtebv_0BxAYQiSgqWid3eRufXij7-396kXwYhum_V-hKXBrGUjWPBAEtvGCMKzioFlzxRBPYwOXRXcGk-limV';
-
-webPush.setGCMAPIKey(GCM_API_KEY);
-webPush.setVapidDetails(
-    'mailto:cbrbusissues@gmail.com',
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-);
+const vapidKeys = webPush.generateVAPIDKeys();
+const API_KEY = 'A6F762'; // Development
+// const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
@@ -37,57 +22,37 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/getPublicKey', function (req, res) {
-    // A real world application would store the subscription info.
-    res.json({ key: vapidKeys.publicKey });
-});
+// app.get('/getPublicKey', function (req, res) {
+//     // A real world application would store the subscription info.
+//     res.json({ key: vapidKeys.publicKey });
+// });
 
 
 app.post('/register', function (req, res) {
     // A real world application would store the subscription info.
-    console.log('register::')
     res.sendStatus(201);
 });
-
-// For debugging
-// app.post('/sendNotification', function (req, res) {
-//     const pushSubscription = {
-//         endpoint: req.body.endpoint,
-//         keys: {
-//             auth: req.body.authSecret,
-//             p256dh: req.body.key
-//         }
-//     },
-//     payload = 'Payload Text',
-//     options = {
-//         gcmAPIKey: GCM_API_KEY,
-//         TTL: 0
-//     };
-
-//     webPush.sendNotification(pushSubscription, payload, options)
-//         .then(function () {
-//             res.sendStatus(201);
-//         })
-//         .catch(function (error) {
-//             console.log(error);
-//             res.sendStatus(error.statusCode);
-//         });
-// });
 
 app.post('/sendNotification', function (req, res) {
     clearInterval(refreshInterval);
 
-    const pushSubscription = {
+    const pushSubscriptions = {
         endpoint: req.body.endpoint,
         keys: {
-            auth: req.body.authSecret,
-            p256dh: req.body.key
+            p256dh: req.body.key,
+            auth: req.body.authSecret
         }
     },
+    payload = '',
     options = {
-        gcmAPIKey: GCM_API_KEY,
-        TTL: 0
+        vapidDetails: {
+            subject: 'mailto:cbrbusissues@gmail.com',
+            publicKey: vapidKeys.publicKey,
+            privateKey: vapidKeys.privateKey
+        }
     };
+
+    webPush.setGCMAPIKey('135415812168');
 
     var busId = req.body.busId,
         busStopId = req.body.busStopId,
@@ -101,23 +66,7 @@ app.post('/sendNotification', function (req, res) {
         busId = '00' + busId.toString();
     } else if (busId < 1000) {
         busId = '0' + busId.toString();
-    };
-
-    var payload = busId.toString() + ',' + vehicleRef.toString();
-
-    $xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>';
-    $xml += '<Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt">';
-
-    $xml += '<ServiceRequest>';
-    $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
-    $xml += '<RequestorRef>' + API_KEY + '</RequestorRef>';
-    $xml += '<VehicleMonitoringRequest version="2.0">';
-    $xml += '<RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp>';
-    $xml += '<VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef>';
-    $xml += '</VehicleMonitoringRequest>';
-    $xml += '</ServiceRequest>';
-
-    $xml += '</Siri>';
+    }
 
     console.log('sendNotification::');
     jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
@@ -126,14 +75,16 @@ app.post('/sendNotification', function (req, res) {
 
         refreshInterval = setInterval(function () {
             console.log('refresh::');
+
             $.ajax({
                 url: 'https://cors-anywhere.herokuapp.com/http://siri.nxtbus.act.gov.au:11000/' + API_KEY + '/vm/service.xml',
-                data: $xml,
+                data: '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?><Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt"><ServiceRequest><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><RequestorRef>' + API_KEY + '</RequestorRef><VehicleMonitoringRequest version="2.0"><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef></VehicleMonitoringRequest></ServiceRequest></Siri>',
                 type: 'POST',
                 contentType: 'text/xml',
                 dataType: "text",
                 success: function (xml) {
                     console.log('success::');
+
                     var xmlDoc = $.parseXML(xml),
                         $xml = $(xmlDoc),
                         isNextStop = false;
@@ -143,17 +94,16 @@ app.post('/sendNotification', function (req, res) {
                         $v,
                         $vehicleLat,
                         $vehicleLng,
-                        onwardCall,
                         stopPointRef;
 
                     $.each($vehicleActivity, function (i, v) {
                         $v = $(v);
-                        onwardCall = $v.find('OnwardCall');
-                        stopPointRef = $(onwardCall).find('StopPointRef');
+                        stopPointRef = $v.find('StopPointRef');
 
                         if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
                             console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
-                            if (Number(stopPointRef[0].innerHTML) == Number(busStopId)) {
+
+                            if (stopPointRef[0].innerHTML == busStopId) {
                                 isNextStop = true;
                                 return false;
                             }
@@ -163,14 +113,11 @@ app.post('/sendNotification', function (req, res) {
                     if (isNextStop) {
                         clearInterval(refreshInterval);
 
-                        webPush.sendNotification(pushSubscription, payload, options)
-                            .then(function () {
-                                res.sendStatus(201);
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                                res.sendStatus(error.statusCode);
-                            });
+                        webPush.sendNotification(
+                            pushSubscriptions,
+                            payload,
+                            options
+                        );
                     }
                 },
                 error: function (error) {
@@ -179,8 +126,9 @@ app.post('/sendNotification', function (req, res) {
             });
         }, 10000);
     });
-});
 
+    res.send('OK');
+});
 
 app.listen(process.env.PORT || 8888, function () {
     console.log('Example app listening on port 8888!');
