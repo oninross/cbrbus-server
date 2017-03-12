@@ -8,8 +8,8 @@ var $ = require('jquery'),
     refreshInterval;
 
 const vapidKeys = webPush.generateVAPIDKeys();
-const API_KEY = 'A6F762'; // Development
-// const API_KEY = 'AE9887'; // Production
+// const API_KEY = 'A6F762'; // Development
+const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
