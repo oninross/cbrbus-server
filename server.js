@@ -13,8 +13,8 @@ const vapidKeys = {
     privateKey: 'tdYWdgT7W3kHb5TSeZcq_d16x3wkD3QTzWPUulAtQ0Y'
 };
 
-const API_KEY = 'A6F762'; // Development
-// const API_KEY = 'AE9887'; // Production
+// const API_KEY = 'A6F762'; // Development
+const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
