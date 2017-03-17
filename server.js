@@ -7,9 +7,14 @@ var $ = require('jquery'),
     vehicleRef,
     refreshInterval;
 
-const vapidKeys = webPush.generateVAPIDKeys();
-// const API_KEY = 'A6F762'; // Development
-const API_KEY = 'AE9887'; // Production
+// const vapidKeys = webPush.generateVAPIDKeys();
+const vapidKeys = {
+    publicKey: 'BD4qD23xudO3P1vVExYZlblRFdlfwBLnwNkCkDz4Pr038FTCVZIZodsurySHNtfIdC6s18pu7rm2DNUfElI9j6Y',
+    privateKey: 'tdYWdgT7W3kHb5TSeZcq_d16x3wkD3QTzWPUulAtQ0Y'
+};
+
+const API_KEY = 'A6F762'; // Development
+// const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
