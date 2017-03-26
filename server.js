@@ -48,7 +48,6 @@ app.post('/sendNotification', function (req, res) {
             auth: req.body.authSecret
         }
     },
-    payload = '',
     options = {
         vapidDetails: {
             subject: 'mailto:cbrbusissues@gmail.com',
@@ -99,17 +98,21 @@ app.post('/sendNotification', function (req, res) {
                         $v,
                         $vehicleLat,
                         $vehicleLng,
-                        stopPointRef;
+                        stopPointRef,
+                        vehicleRef,
+                        vehicleRefNum;
 
                     $.each($vehicleActivity, function (i, v) {
                         $v = $(v);
                         stopPointRef = $v.find('StopPointRef');
+                        vehicleRef = $v.find('VehicleRef');
 
                         if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
                             console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
 
                             if (stopPointRef[0].innerHTML == busStopId) {
                                 isNextStop = true;
+                                vehicleRefNum = vehicleRef[0].innerHTML;
                                 return false;
                             }
                         }
@@ -118,11 +121,15 @@ app.post('/sendNotification', function (req, res) {
                     if (isNextStop) {
                         clearInterval(refreshInterval);
 
+                        var payload = [busId, vehicleRefNum];
+                        payload = payload.toString();
+
                         webPush.sendNotification(
                             pushSubscriptions,
                             payload,
                             options
                         );
+                        console.log('Send push notification::')
                     }
                 },
                 error: function (error) {
