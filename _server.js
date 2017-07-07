@@ -27,11 +27,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-// app.get('/getPublicKey', function (req, res) {
-//     // A real world application would store the subscription info.
-//     res.json({ key: vapidKeys.publicKey });
-// });
-
+app.get('/getPublicKey', function (req, res) {
+    // A real world application would store the subscription info.
+    console.log('hello world')
+    res.json({ key: vapidKeys.publicKey });
+});
 
 app.post('/register', function (req, res) {
     // A real world application would store the subscription info.
