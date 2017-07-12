@@ -4,23 +4,25 @@ var $ = require('jquery'),
     app = express(),
     webPush = require('web-push'),
     bodyParser = require('body-parser'),
+    cors = require('cors'),
     vehicleRef,
     refreshInterval;
 
-// const vapidKeys = webPush.generateVAPIDKeys();
-const vapidKeys = {
+// var vapidKeys = webPush.generateVAPIDKeys();
+var vapidKeys = {
     publicKey: 'BICxnXBM_YNm-XbMG2OWfotUv4roMv7yxsXiowl0QDYs8ERPPlUd4A1Tcd8S3sXI7WneX9c2mh1xxNAdIjKzy0I',
     privateKey: 'YQsK3rEMKv_RpectJAKZLpT1KxzQplVsLxSHxJ7dGP8'
 };
 
-// const API_KEY = 'A6F762'; // Development
-const API_KEY = 'AE9887'; // Production
+// var API_KEY = 'A6F762'; // Development
+var API_KEY = 'AE9887'; // Production
 
+app.use(cors());
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Content-Type', 'application/json');
     res.header('Access-Control-Allow-Credentials', true);
 
@@ -42,7 +44,7 @@ app.post('/register', function (req, res) {
 app.post('/sendNotification', function (req, res) {
     clearInterval(refreshInterval);
 
-    const pushSubscriptions = {
+    var pushSubscriptions = {
         endpoint: req.body.endpoint,
         keys: {
             p256dh: req.body.key,
@@ -143,8 +145,12 @@ app.post('/sendNotification', function (req, res) {
     res.send('OK');
 });
 
+app.options('/getBusPath', function (req, res) {
+    res.send('OK');
+})
+
 app.post('/getBusPath', function (req, res) {
-    let request = req.body,
+    var request = req.body,
         busCoordinates = [];
 
     console.log('getBusPath::');
@@ -156,7 +162,7 @@ app.post('/getBusPath', function (req, res) {
         console.log('call')
 
         $.ajax({
-            url: 'https://oninross.carto.com/api/v2/sql?q=WITH Q1 AS (SELECT t.shape_id , count(t.shape_id) total FROM routes r INNER JOIN trips t ON t.route_id = r.route_id WHERE r.route_short_name = ' + Number(request.busId) + ' AND t.direction_id = ' + request.busDir + ' GROUP BY t.shape_id) SELECT DISTINCT s.* FROM shapes s WHERE s.shape_id IN (SELECT shape_id FROM Q1 WHERE total = (SELECT MAX(total) FROM Q1))&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
+            url: 'https://cors-anywhere.herokuapp.com/https://oninross.carto.com/api/v2/sql?q=WITH Q1 AS (SELECT t.shape_id , count(t.shape_id) total FROM routes r INNER JOIN trips t ON t.route_id = r.route_id WHERE r.route_short_name = ' + Number(request.busId) + ' AND t.direction_id = ' + request.busDir + ' GROUP BY t.shape_id) SELECT DISTINCT s.* FROM shapes s WHERE s.shape_id IN (SELECT shape_id FROM Q1 WHERE total = (SELECT MAX(total) FROM Q1))&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
             dataType: 'jsonp',
             contentType: "application/json; charset=utf-8",
             success: function (data) {
