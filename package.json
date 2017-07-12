@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "body-parser": "*",
+    "cors": "*",
     "express": "*",
     "jquery": "*",
     "jsdom": "*",
