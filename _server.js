@@ -13,8 +13,8 @@ const vapidKeys = {
     privateKey: 'YQsK3rEMKv_RpectJAKZLpT1KxzQplVsLxSHxJ7dGP8'
 };
 
-const API_KEY = 'A6F762'; // Development
-// const API_KEY = 'AE9887'; // Production
+// const API_KEY = 'A6F762'; // Development
+const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
@@ -27,10 +27,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-// app.get('/getPublicKey', function (req, res) {
-//     // A real world application would store the subscription info.
-//     res.json({ key: vapidKeys.publicKey });
-// });
+app.get('/getPublicKey', function (req, res) {
+    // A real world application would store the subscription info.
+    console.log('hello world')
+    res.json({ key: vapidKeys.publicKey });
+});
 
 
 app.post('/register', function (req, res) {
@@ -140,6 +141,40 @@ app.post('/sendNotification', function (req, res) {
     });
 
     res.send('OK');
+});
+
+app.post('/getBusPath', function (req, res) {
+    let request = req.body,
+        busCoordinates = [];
+
+    console.log('getBusPath::');
+
+    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
+        var $ = window.$;
+        $.support.cors = true;
+
+        console.log('call')
+
+        $.ajax({
+            url: 'https://oninross.carto.com/api/v2/sql?q=WITH Q1 AS (SELECT t.shape_id , count(t.shape_id) total FROM routes r INNER JOIN trips t ON t.route_id = r.route_id WHERE r.route_short_name = ' + Number(request.busId) + ' AND t.direction_id = ' + request.busDir + ' GROUP BY t.shape_id) SELECT DISTINCT s.* FROM shapes s WHERE s.shape_id IN (SELECT shape_id FROM Q1 WHERE total = (SELECT MAX(total) FROM Q1))&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
+            // url: 'https://oninross.carto.com/api/v2/sql?q=SELECT * FROM table_2_southbound&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
+            success: function (data) {
+                $.each(data.rows, function (i, v) {
+                    busCoordinates.push({
+                        lat: v.shape_pt_lat,
+                        lng: v.shape_pt_lon
+                    });
+                });
+
+                console.log('done')
+
+                res.json({ busCoordinates: busCoordinates });
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
 });
 
 app.listen(process.env.PORT || 8888, function () {
