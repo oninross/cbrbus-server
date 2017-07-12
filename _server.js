@@ -149,7 +149,7 @@ app.options('/getBusPath', function (req, res) {
     res.send('OK');
 })
 
-app.post('/getBusPath', function (req, res) {
+app.get('/getBusPath', function (req, res) {
     var request = req.body,
         busCoordinates = [];
 
