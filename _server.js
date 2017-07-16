@@ -7,31 +7,30 @@ var $ = require('jquery'),
     vehicleRef,
     refreshInterval;
 
-// var vapidKeys = webPush.generateVAPIDKeys();
-var vapidKeys = {
+// const vapidKeys = webPush.generateVAPIDKeys();
+const vapidKeys = {
     publicKey: 'BICxnXBM_YNm-XbMG2OWfotUv4roMv7yxsXiowl0QDYs8ERPPlUd4A1Tcd8S3sXI7WneX9c2mh1xxNAdIjKzy0I',
     privateKey: 'YQsK3rEMKv_RpectJAKZLpT1KxzQplVsLxSHxJ7dGP8'
 };
 
-// var API_KEY = 'A6F762'; // Development
-var API_KEY = 'AE9887'; // Production
+const API_KEY = 'A6F762'; // Development
+// const API_KEY = 'AE9887'; // Production
 
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
     res.header('Content-Type', 'application/json');
     res.header('Access-Control-Allow-Credentials', true);
 
     next();
 });
 
-app.get('/getPublicKey', function (req, res) {
-    // A real world application would store the subscription info.
-    console.log('hello world')
-    res.json({ key: vapidKeys.publicKey });
-});
+// app.get('/getPublicKey', function (req, res) {
+//     // A real world application would store the subscription info.
+//     res.json({ key: vapidKeys.publicKey });
+// });
 
 
 app.post('/register', function (req, res) {
@@ -42,7 +41,7 @@ app.post('/register', function (req, res) {
 app.post('/sendNotification', function (req, res) {
     clearInterval(refreshInterval);
 
-    var pushSubscriptions = {
+    const pushSubscriptions = {
         endpoint: req.body.endpoint,
         keys: {
             p256dh: req.body.key,
@@ -140,10 +139,6 @@ app.post('/sendNotification', function (req, res) {
         }, 10000);
     });
 
-    res.send('OK');
-});
-
-app.options('/getBusPath', function (req, res) {
     res.send('OK');
 });
 
