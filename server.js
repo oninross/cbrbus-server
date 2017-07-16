@@ -72,7 +72,6 @@ app.post('/sendNotification', function (req, res) {
     }
 
     console.log('sendNotification::');
-    $.support.cors = true;
 
     refreshInterval = setInterval(function () {
         console.log('refresh::');
