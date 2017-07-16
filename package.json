@@ -9,8 +9,5 @@
     "jquery": "*",
     "jsdom": "*",
     "web-push": "*"
-  },
-  "engines": {
-    "node": "6.11.1"
   }
 }
