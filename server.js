@@ -71,7 +71,10 @@ app.post('/sendNotification', function (req, res) {
     }
 
     console.log('sendNotification::');
-    require("jsdom").env("", function (err, window) {
+    require('jsdom').env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
+        var $ = window.$;
+        $.support.cors = true;
+
         refreshInterval = setInterval(function () {
             console.log('refresh::');
 
