@@ -1,13 +1,16 @@
 {
   "name": "cbrbuses",
   "description": "",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "body-parser": "*",
-    "express": "*",
-    "jquery": "*",
-    "jsdom": "*",
-    "web-push": "*"
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "jquery": "~2.2.0",
+    "jsdom": "^11.1.0",
+    "web-push": "^3.2.2"
+  },
+  "engines": {
+    "node": "6.11.1"
   }
 }
