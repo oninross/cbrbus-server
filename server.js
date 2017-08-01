@@ -74,7 +74,7 @@ app.post('/sendNotification', function (req, res) {
     }
 
     console.log('sendNotification::');
-    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
+    jsdom.fromURL("http://code.jquery.com/jquery.min.js", options).then(window => {
         var $ = window.$;
         $.support.cors = true;
 
@@ -149,7 +149,7 @@ app.post('/getBusPath', function (req, res) {
 
     console.log('getBusPath::');
 
-    JSDOM.fromURL("http://code.jquery.com/jquery.min.js", options).then(window => {
+    jsdom.fromURL("http://code.jquery.com/jquery.min.js", options).then(window => {
         var $ = window.$;
         $.support.cors = true;
 
