@@ -149,7 +149,7 @@ app.post('/getBusPath', function (req, res) {
 
     console.log('getBusPath::');
 
-    jsdom.env('', ['http://code.jquery.com/jquery.min.js'], function (err, window) {
+    JSDOM.fromURL("http://code.jquery.com/jquery.min.js", options).then(window => {
         var $ = window.$;
         $.support.cors = true;
 
