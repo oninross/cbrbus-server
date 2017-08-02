@@ -20,7 +20,7 @@ app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
+    res.header('Access-Control-Allow-Origin, Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
     res.header('Content-Type', 'application/json');
     res.header('Access-Control-Allow-Credentials', true);
 
