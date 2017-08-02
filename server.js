@@ -19,10 +19,11 @@ const API_KEY = 'AE9887'; // Production
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Origin, Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
-    res.header('Content-Type', 'application/json');
-    res.header('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Credentials', true);
 
     next();
 });
