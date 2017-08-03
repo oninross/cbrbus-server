@@ -19,8 +19,8 @@ const API_KEY = 'AE9887'; // Production
 app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST');
+    res.setHeader('Access-Control-Allow-Origin', 'https://cbrbuses.firebaseapp.com, https://www.cbrbus.com.au');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Credentials', true);
