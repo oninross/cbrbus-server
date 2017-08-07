@@ -40,7 +40,7 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/sendNotification', function (req, res) {
-    eval('var ' + req.body.endpoint + '=' + value);
+    clearInterval(eval(req.body.endpoint));
 
     const pushSubscriptions = {
         endpoint: req.body.endpoint,
