@@ -40,7 +40,7 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/sendNotification', function (req, res) {
-    clearInterval(eval(req.body.endpoint));
+    clearInterval(eval('var ' + req.body.endpoint));
 
     const pushSubscriptions = {
         endpoint: req.body.endpoint,
@@ -78,7 +78,7 @@ app.post('/sendNotification', function (req, res) {
         var $ = window.$;
         $.support.cors = true;
 
-        eval('var ' + req.body.endpoint + '=' + setInterval(function () {
+        eval(req.body.endpoint + '=' + setInterval(function () {
                 console.log('refresh::');
 
                 $.ajax({
