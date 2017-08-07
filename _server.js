@@ -4,7 +4,6 @@ var $ = require('jquery'),
     app = express(),
     webPush = require('web-push'),
     bodyParser = require('body-parser'),
-    instance = 0,
     vehicleRef,
     refreshInterval;
 
@@ -43,6 +42,7 @@ app.post('/register', function (req, res) {
 
 app.post('/sendNotification', function (req, res) {
     refreshInterval = req.body.endpoint;
+
     clearInterval(refreshInterval);
 
     const pushSubscriptions = {
@@ -180,6 +180,6 @@ app.post('/getBusPath', function (req, res) {
     });
 });
 
-app.listen(process.env.PORT || 8888, function () {
+app.listen(process.env.PORT || 8888, function() {
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
