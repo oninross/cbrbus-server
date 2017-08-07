@@ -4,8 +4,7 @@ var $ = require('jquery'),
     app = express(),
     webPush = require('web-push'),
     bodyParser = require('body-parser'),
-    vehicleRef,
-    refreshInterval;
+    vehicleRef;
 
 // const vapidKeys = webPush.generateVAPIDKeys();
 const vapidKeys = {
@@ -41,9 +40,7 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/sendNotification', function (req, res) {
-    refreshInterval = req.body.endpoint;
-
-    clearInterval(refreshInterval);
+    clearInterval(this[req.body.endpoint]);
 
     const pushSubscriptions = {
         endpoint: req.body.endpoint,
@@ -81,7 +78,7 @@ app.post('/sendNotification', function (req, res) {
         var $ = window.$;
         $.support.cors = true;
 
-        refreshInterval = setInterval(function () {
+        this[req.body.endpoint] = setInterval(function () {
             console.log('refresh::');
 
             $.ajax({
@@ -123,7 +120,7 @@ app.post('/sendNotification', function (req, res) {
                     });
 
                     if (isNextStop) {
-                        clearInterval(refreshInterval);
+                        clearInterval(this[req.body.endpoint]);
 
                         var payload = [busId, vehicleRefNum];
                         payload = payload.toString();
@@ -180,6 +177,6 @@ app.post('/getBusPath', function (req, res) {
     });
 });
 
-app.listen(process.env.PORT || 8888, function() {
+app.listen(process.env.PORT || 8888, function () {
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });

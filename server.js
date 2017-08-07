@@ -40,7 +40,7 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/sendNotification', function (req, res) {
-    clearInterval(eval('var ' + req.body.endpoint));
+    clearInterval(this[req.body.endpoint]);
 
     const pushSubscriptions = {
         endpoint: req.body.endpoint,
@@ -78,67 +78,66 @@ app.post('/sendNotification', function (req, res) {
         var $ = window.$;
         $.support.cors = true;
 
-        eval(req.body.endpoint + '=' + setInterval(function () {
-                console.log('refresh::');
+        this[req.body.endpoint] = setInterval(function () {
+            console.log('refresh::');
 
-                $.ajax({
-                    url: 'https://cors-anywhere.herokuapp.com/http://siri.nxtbus.act.gov.au:11000/' + API_KEY + '/vm/service.xml',
-                    data: '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?><Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt"><ServiceRequest><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><RequestorRef>' + API_KEY + '</RequestorRef><VehicleMonitoringRequest version="2.0"><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef></VehicleMonitoringRequest></ServiceRequest></Siri>',
-                    type: 'POST',
-                    contentType: 'text/xml',
-                    dataType: "text",
-                    success: function (xml) {
-                        console.log('success::');
+            $.ajax({
+                url: 'https://cors-anywhere.herokuapp.com/http://siri.nxtbus.act.gov.au:11000/' + API_KEY + '/vm/service.xml',
+                data: '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?><Siri version="2.0" xmlns:ns2="http://www.ifopt.org.uk/acsb" xmlns="http://www.siri.org.uk/siri" xmlns:ns4="http://datex2.eu/schema/2_0RC1/2_0" xmlns:ns3="http://www.ifopt.org.uk/ifopt"><ServiceRequest><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><RequestorRef>' + API_KEY + '</RequestorRef><VehicleMonitoringRequest version="2.0"><RequestTimestamp>' + new Date().toISOString() + '</RequestTimestamp><VehicleMonitoringRef>VM_ACT_' + busId + '</VehicleMonitoringRef></VehicleMonitoringRequest></ServiceRequest></Siri>',
+                type: 'POST',
+                contentType: 'text/xml',
+                dataType: "text",
+                success: function (xml) {
+                    console.log('success::');
 
-                        var xmlDoc = $.parseXML(xml),
-                            $xml = $(xmlDoc),
-                            isNextStop = false;
+                    var xmlDoc = $.parseXML(xml),
+                        $xml = $(xmlDoc),
+                        isNextStop = false;
 
-                        // console.log(xmlDoc);
-                        var $vehicleActivity = $xml.find('VehicleActivity'),
-                            $v,
-                            $vehicleLat,
-                            $vehicleLng,
-                            stopPointRef,
-                            vehicleRef,
-                            vehicleRefNum;
+                    // console.log(xmlDoc);
+                    var $vehicleActivity = $xml.find('VehicleActivity'),
+                        $v,
+                        $vehicleLat,
+                        $vehicleLng,
+                        stopPointRef,
+                        vehicleRef,
+                        vehicleRefNum;
 
-                        $.each($vehicleActivity, function (i, v) {
-                            $v = $(v);
-                            stopPointRef = $v.find('StopPointRef');
-                            vehicleRef = $v.find('VehicleRef');
+                    $.each($vehicleActivity, function (i, v) {
+                        $v = $(v);
+                        stopPointRef = $v.find('StopPointRef');
+                        vehicleRef = $v.find('VehicleRef');
 
-                            if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
-                                console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
+                        if (stopPointRef[0] != undefined && vehicleRef[0] != undefined) {
+                            console.log(stopPointRef[0].innerHTML + ' == ' +  busStopId);
 
-                                if (stopPointRef[0].innerHTML == busStopId) {
-                                    isNextStop = true;
-                                    vehicleRefNum = vehicleRef[0].innerHTML;
-                                    return false;
-                                }
+                            if (stopPointRef[0].innerHTML == busStopId) {
+                                isNextStop = true;
+                                vehicleRefNum = vehicleRef[0].innerHTML;
+                                return false;
                             }
-                        });
-
-                        if (isNextStop) {
-                            clearInterval(eval(req.body.endpoint));
-
-                            var payload = [busId, vehicleRefNum];
-                            payload = payload.toString();
-
-                            webPush.sendNotification(
-                                pushSubscriptions,
-                                payload,
-                                options
-                            );
-                            console.log('Send push notification::')
                         }
-                    },
-                    error: function (error) {
-                        console.log(error);
+                    });
+
+                    if (isNextStop) {
+                        clearInterval(this[req.body.endpoint]);
+
+                        var payload = [busId, vehicleRefNum];
+                        payload = payload.toString();
+
+                        webPush.sendNotification(
+                            pushSubscriptions,
+                            payload,
+                            options
+                        );
+                        console.log('Send push notification::')
                     }
-                });
-            }, 10000)
-        );
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }, 10000);
     });
 
     res.send('OK');
