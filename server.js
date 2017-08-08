@@ -40,10 +40,12 @@ app.post('/register', function (req, res) {
 });
 
 app.post('/sendNotification', function (req, res) {
-    clearInterval(this[req.body.endpoint]);
+    var endpoint = req.body.endpoint;
+
+    clearInterval(this[endpoint]);
 
     const pushSubscriptions = {
-        endpoint: req.body.endpoint,
+        endpoint: endpoint,
         keys: {
             p256dh: req.body.key,
             auth: req.body.authSecret
@@ -78,7 +80,7 @@ app.post('/sendNotification', function (req, res) {
         var $ = window.$;
         $.support.cors = true;
 
-        this[req.body.endpoint] = setInterval(function () {
+        this[endpoint] = setInterval(function () {
             console.log('refresh::');
 
             $.ajax({
@@ -120,7 +122,7 @@ app.post('/sendNotification', function (req, res) {
                     });
 
                     if (isNextStop) {
-                        clearInterval(this[req.body.endpoint]);
+                        clearInterval(this[endpoint]);
 
                         var payload = [busId, vehicleRefNum];
                         payload = payload.toString();
