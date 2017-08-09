@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
 
 app.get('/getPublicKey', function (req, res) {
     // A real world application would store the subscription info.
-    console.log('hello world')
+    console.log('hello world');
     res.json({ key: vapidKeys.publicKey });
 });
 
@@ -131,7 +131,7 @@ app.post('/sendNotification', function (req, res) {
                             payload,
                             options
                         );
-                        console.log('Send push notification::')
+                        console.log('Send push notification::');
                     }
                 },
                 error: function (error) {
@@ -144,7 +144,7 @@ app.post('/sendNotification', function (req, res) {
     res.send('OK');
 });
 
-app.get('/getBusPath', function (req, res) {
+app.post('/getBusPath', function (req, res) {
     let request = req.body,
         busCoordinates = [];
 
@@ -154,11 +154,12 @@ app.get('/getBusPath', function (req, res) {
         var $ = window.$;
         $.support.cors = true;
 
-        console.log('call')
+        console.log('call');
 
         $.ajax({
             url: 'https://oninross.carto.com/api/v2/sql?q=WITH Q1 AS (SELECT t.shape_id , count(t.shape_id) total FROM routes r INNER JOIN trips t ON t.route_id = r.route_id WHERE r.route_short_name = ' + Number(request.busId) + ' AND t.direction_id = ' + request.busDir + ' GROUP BY t.shape_id) SELECT DISTINCT s.* FROM shapes s WHERE s.shape_id IN (SELECT shape_id FROM Q1 WHERE total = (SELECT MAX(total) FROM Q1))&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
             // url: 'https://oninross.carto.com/api/v2/sql?q=SELECT * FROM table_2_southbound&api_key=f35be52ec1b8635c34ec7eab01827bb219750e7c',
+            contentType: 'application/json; charset=utf-8',
             success: function (data) {
                 $.each(data.rows, function (i, v) {
                     busCoordinates.push({
@@ -167,7 +168,7 @@ app.get('/getBusPath', function (req, res) {
                     });
                 });
 
-                console.log('done')
+                console.log('done');
 
                 res.json({ busCoordinates: busCoordinates });
             },
